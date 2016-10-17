@@ -6,6 +6,18 @@ describe Movie do
         expect( Tmdb::Movie).to receive(:find).with('Inception')
         Movie.find_in_tmdb('Inception')
       end
+      context 'with no matches' do
+        it 'should return empty array []' do
+          allow(Tmdb::Movie).to receive(:find).with('').and_return (nil)
+          expect(Movie.find_in_tmdb('')).to eq([])
+        end
+      end
+      context 'test' do
+        it 'should return empty array []' do
+          expect( Tmdb::Movie).to receive(:find).with('Inception')
+          Movie.find_in_tmdb('Inception')
+        end
+      end
     end
     context 'with invalid key' do
       it 'should raise InvalidKeyError if key is missing or invalid' do
