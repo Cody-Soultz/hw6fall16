@@ -1,6 +1,6 @@
 class Movie < ActiveRecord::Base
   def self.all_ratings
-    %w(G PG PG-13 NC-17 R NA)
+    %w(G PG PG-13 NC-17 R NR NA)
   end
   
 class Movie::InvalidKeyError < StandardError ; end
