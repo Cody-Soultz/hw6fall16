@@ -4,9 +4,10 @@ class Movie < ActiveRecord::Base
   end
   
 class Movie::InvalidKeyError < StandardError ; end
+
+Tmdb::Api.key("f4702b08c0ac6ea5b51425788bb26562")
   
   def self.find_in_tmdb(string)
-    Tmdb::Api.key("f4702b08c0ac6ea5b51425788bb26562")
     begin
       @moviesReturnedFromSearch = Tmdb::Movie.find(string)
       @arrayToReturn=[]
@@ -31,22 +32,18 @@ class Movie::InvalidKeyError < StandardError ; end
   end
 
   def self.create_from_tmdb(tmdb_id)
-    Tmdb::Api.key("f4702b08c0ac6ea5b51425788bb26562")
-    begin
-      @movieRating = nil
-      @movie = Tmdb::Movie.detail(tmdb_id)
-      Tmdb::Movie.releases(tmdb_id)["countries"].each do |results|
-        if results["iso_3166_1"] == "US"
-          @movieRating = results["certification"]
-        end
+    @movieRating = nil
+    @movie = Tmdb::Movie.detail(tmdb_id)
+    index=0
+    Tmdb::Movie.releases(tmdb_id)["countries"].each do |results|
+      if results["iso_3166_1"] == "US"
+        @movieRating = results["certification"]
       end
-      if @movieRating.to_s.strip.length == 0
-        @movieRating = "NA"
-      end
-      @movieAttributes = {:title=> @movie["title"], :release_date=> @movie["release_date"], :rating => @movieRating, :description => @movie["overview"]}
-      Movie.create!(@movieAttributes)
-    rescue Tmdb::InvalidApiKeyError
-      raise Movie::InvalidKeyError, 'Invalid API key'
     end
+    if @movieRating.to_s.strip.length == 0
+      @movieRating = "NA"
+    end
+    @movieAttributes = {:title=> @movie["title"], :release_date=> @movie["release_date"], :rating => @movieRating, :description => @movie["overview"]}
+    Movie.create!(@movieAttributes)
   end
 end

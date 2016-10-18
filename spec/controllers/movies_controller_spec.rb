@@ -52,4 +52,25 @@ describe MoviesController do
       expect(assigns(:movies)).to eq 'test'
     end
   end
+  
+  describe 'adding from TMDb' do
+    it 'should flash a message for no movies selected' do
+      expect(Movie).not_to receive(:create_from_tmdb)
+      post :add_tmdb, {:tmdb_movies => nil}
+      expect(flash[:notice]).to eq 'No movies selected'
+      expect(response).to redirect_to(movies_path)
+    end
+    it 'should flash a message for successful addition' do
+      movie = {double("movie") => 0}
+      expect(Movie).to receive(:create_from_tmdb)
+      post :add_tmdb, {:tmdb_movies => movie}
+      expect(flash[:notice]).to eq 'Movies successfully added to Rotten Potatoes'
+      expect(response).to redirect_to(movies_path)
+    end
+    it 'should add all movies checked by user' do
+      movies = {"tmdb_movies" => {"203765"=>"on", "376659"=>"on", "9737"=>"on"}}
+      expect(Movie).to receive(:create_from_tmdb).exactly(3).times
+      post :add_tmdb, movies
+    end
+  end
 end
